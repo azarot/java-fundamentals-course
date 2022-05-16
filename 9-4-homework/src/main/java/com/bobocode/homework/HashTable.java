@@ -7,33 +7,35 @@ public class HashTable<K, V> {
     private Node<K, V>[] tab = new Node[DEFAULT_CAPACITY];
     private int size = 0;
 
-    public void put(K key, V value) {
+    public V put(K key, V value) {
         if (size >= tab.length * 0.75) {
             resize(tab.length * 2);
         }
-        put(tab, key, value);
+        return put(tab, key, value);
     }
 
-    private void put(Node<K, V>[] table, K key, V value) {
+    private V put(Node<K, V>[] table, K key, V value) {
         int index = Math.abs(key.hashCode() % table.length);
         Node<K, V> node = table[index];
         if (node == null) {
             table[index] = new Node<>(key, value);
             size++;
-            return;
+            return null;
         }
 
         while (node != null) {
             if (key.equals(node.key)) {
+                var oldValue = node.value;
                 node.value = value;
-                return;
+                return oldValue;
             } else if (node.next == null) {
                 node.next = new Node<>(key, value);
                 size++;
-                return;
+                return null;
             }
             node = node.next;
         }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -58,10 +60,5 @@ public class HashTable<K, V> {
                 System.out.println();
             }
         }
-    }
-
-    static int hash(Object key) {
-        int h;
-        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
     }
 }
